@@ -1,0 +1,17 @@
+# golangci-lint v2 configuration.
+#
+# v2 (not v1) is required: this module targets a recent Go version, and a
+# golangci-lint built with an older Go than the module's `go` directive refuses
+# to run. Use golangci-lint >= v2 (built with a matching-or-newer Go).
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  # The curated "standard" set: errcheck, govet, ineffassign, staticcheck, unused.
+  default: standard
+
+formatters:
+  enable:
+    - gofmt
