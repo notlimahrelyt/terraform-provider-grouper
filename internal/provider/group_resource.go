@@ -45,36 +45,36 @@ func (r *groupResource) Metadata(_ context.Context, req resource.MetadataRequest
 
 func (r *groupResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a Grouper group. The parent stem must already exist; " +
+		MarkdownDescription: "Manages a Grouper group. The parent stem must already exist; " +
 			"this resource does not create it.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:      true,
-				Description:   "Grouper UUID of the group. Used as the stable Terraform identifier.",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				Computed:            true,
+				MarkdownDescription: "Grouper UUID of the group. Used as the stable Terraform identifier.",
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"name": schema.StringAttribute{
 				Required: true,
-				Description: "Full colon-delimited system name of the group, e.g. " +
-					"\"example:apps:myteam:aws-admins\". Changing this forces replacement.",
+				MarkdownDescription: "Full colon-delimited system name of the group, e.g. " +
+					"`example:apps:myteam:aws-admins`. Changing this forces replacement.",
 				Validators:    grouperPathValidators(),
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"display_name": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				Description: "Human-readable display label for this group component " +
-					"(Grouper displayExtension). Defaults to the last path component if unset.",
+				MarkdownDescription: "Human-readable display label for this group component " +
+					"(Grouper `displayExtension`). Defaults to the last path component if unset.",
 				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"description": schema.StringAttribute{
-				Optional:    true,
-				Description: "Description of the group.",
+				Optional:            true,
+				MarkdownDescription: "Description of the group.",
 			},
 			"stem_name": schema.StringAttribute{
-				Computed:      true,
-				Description:   "Full name of the parent stem, derived from name.",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				Computed:            true,
+				MarkdownDescription: "Full name of the parent stem, derived from `name`.",
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

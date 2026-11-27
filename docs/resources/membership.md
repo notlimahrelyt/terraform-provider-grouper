@@ -52,8 +52,8 @@ resource "grouper_membership" "aws_admins" {
 
 ### Read-Only
 
-- `id` (String) Deterministic identifier: "<group_name>/<subject_source_id>/<subject_id>".
-- `membership_type` (String) Membership type managed by this resource. Always "immediate" (direct).
+- `id` (String) Deterministic identifier: `<group_name>/<subject_source_id>/<subject_id>`.
+- `membership_type` (String) Membership type managed by this resource. Always `immediate` (direct).
 
 ## Import
 

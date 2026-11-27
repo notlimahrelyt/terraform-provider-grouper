@@ -44,37 +44,37 @@ func (d *groupDataSource) Metadata(_ context.Context, req datasource.MetadataReq
 
 func (d *groupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Looks up an existing Grouper group by exactly one of id or name.",
+		MarkdownDescription: "Looks up an existing Grouper group by exactly one of `id` or `name`.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Grouper UUID of the group. Provide exactly one of id or name.",
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Grouper UUID of the group. Provide exactly one of `id` or `name`.",
 			},
 			"name": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Full colon-delimited name of the group. Provide exactly one of id or name.",
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Full colon-delimited name of the group. Provide exactly one of `id` or `name`.",
 			},
 			"display_name": schema.StringAttribute{
-				Computed:    true,
-				Description: "Display label for this group component (Grouper displayExtension).",
+				Computed:            true,
+				MarkdownDescription: "Display label for this group component (Grouper `displayExtension`).",
 			},
 			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "Description of the group.",
+				Computed:            true,
+				MarkdownDescription: "Description of the group.",
 			},
 			"stem_name": schema.StringAttribute{
-				Computed:    true,
-				Description: "Full name of the parent stem, derived from name.",
+				Computed:            true,
+				MarkdownDescription: "Full name of the parent stem, derived from `name`.",
 			},
 			"enabled": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether the group is enabled.",
+				Computed:            true,
+				MarkdownDescription: "Whether the group is enabled.",
 			},
 			"type_of_group": schema.StringAttribute{
-				Computed:    true,
-				Description: "Grouper type of group (e.g. \"group\").",
+				Computed:            true,
+				MarkdownDescription: "Grouper type of group (e.g. `group`).",
 			},
 		},
 	}

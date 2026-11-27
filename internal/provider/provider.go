@@ -61,41 +61,41 @@ func (p *grouperProvider) Metadata(_ context.Context, _ provider.MetadataRequest
 
 func (p *grouperProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manage Internet2 Grouper folders/stems, groups, and direct memberships " +
+		MarkdownDescription: "Manage Internet2 Grouper folders/stems, groups, and direct memberships " +
 			"through the Grouper Web Services REST API.",
 		Attributes: map[string]schema.Attribute{
 			"base_url": schema.StringAttribute{
 				Optional: true,
-				Description: "Base URL of the Grouper Web Services REST endpoint, e.g. " +
-					"\"https://grouper.example.edu/grouper-ws/servicesRest\". " +
-					"May also be set with the " + envBaseURL + " environment variable.",
+				MarkdownDescription: "Base URL of the Grouper Web Services REST endpoint, e.g. " +
+					"`https://grouper.example.edu/grouper-ws/servicesRest`. " +
+					"May also be set with the `" + envBaseURL + "` environment variable.",
 			},
 			"ws_version": schema.StringAttribute{
 				Optional: true,
-				Description: "Grouper Web Services API version path segment (e.g. \"v2_6_000\"). " +
-					"Defaults to \"v2_6_000\", which is confirmed against Grouper 4.16. " +
+				MarkdownDescription: "Grouper Web Services API version path segment (e.g. `v2_6_000`). " +
+					"Defaults to `v2_6_000`, which is confirmed against Grouper 4.16. " +
 					"Set this if your deployment requires a different version segment.",
 			},
 			"username": schema.StringAttribute{
 				Optional: true,
-				Description: "Username for the Grouper service account. " +
-					"May also be set with the " + envUser + " environment variable.",
+				MarkdownDescription: "Username for the Grouper service account. " +
+					"May also be set with the `" + envUser + "` environment variable.",
 			},
 			"password": schema.StringAttribute{
 				Optional:  true,
 				Sensitive: true,
-				Description: "Password for the Grouper service account. " +
-					"May also be set with the " + envPass + " environment variable. " +
+				MarkdownDescription: "Password for the Grouper service account. " +
+					"May also be set with the `" + envPass + "` environment variable. " +
 					"Prefer the environment variable so the secret does not appear in configuration.",
 			},
 			"request_timeout": schema.StringAttribute{
 				Optional: true,
-				Description: "Per-request timeout as a Go duration string (e.g. \"30s\", \"1m\"). " +
-					"Defaults to \"30s\". May also be set with the " + envTimeout + " environment variable.",
+				MarkdownDescription: "Per-request timeout as a Go duration string (e.g. `30s`, `1m`). " +
+					"Defaults to `30s`. May also be set with the `" + envTimeout + "` environment variable.",
 			},
 			"insecure_skip_verify": schema.BoolAttribute{
 				Optional: true,
-				Description: "Disable TLS certificate verification. Defaults to false. " +
+				MarkdownDescription: "Disable TLS certificate verification. Defaults to `false`. " +
 					"Enabling this is insecure and should only be used for testing against " +
 					"self-signed development endpoints.",
 			},

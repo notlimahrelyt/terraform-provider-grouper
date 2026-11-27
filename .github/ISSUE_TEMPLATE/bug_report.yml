@@ -1,0 +1,65 @@
+name: Bug report
+description: Something in the provider does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remove credentials, internal hostnames, and real subject ids from anything you paste.
+  - type: input
+    id: provider_version
+    attributes:
+      label: Provider version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: terraform_version
+    attributes:
+      label: Terraform version
+      description: Output of `terraform version`.
+      placeholder: "1.13.4"
+    validations:
+      required: true
+  - type: input
+    id: grouper_version
+    attributes:
+      label: Grouper version
+      description: Server version, and `ws_version` if you set it.
+      placeholder: "4.16.0, ws_version v2_6_000"
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Terraform configuration
+      description: The smallest configuration that shows the problem.
+      render: hcl
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the full error message.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug log
+      description: Relevant lines from a run with `TF_LOG_PROVIDER=DEBUG`.
+      render: text
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. terraform apply
+        2. ...

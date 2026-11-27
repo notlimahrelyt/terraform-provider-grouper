@@ -23,9 +23,10 @@ The service account username/password is wrong or not set. Verify
 > Grouper returned a forbidden result … Confirm the provider service account has
 > the required privileges …
 
-The account authenticated but lacks the privilege for the operation (e.g. CREATE
-on the parent stem, or UPDATE on the group for memberships). Grant the needed
-privilege in Grouper.
+The account authenticated but lacks the privilege for the operation (for example
+`CREATE` on the parent folder to create a group, or `UPDATE` on a group to change
+its members). The [authentication guide](authentication) lists the privilege
+each operation needs.
 
 ## Subject not found
 

@@ -54,24 +54,24 @@ func (r *membershipResource) Metadata(_ context.Context, req resource.MetadataRe
 
 func (r *membershipResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a single direct (immediate) membership of a subject in a Grouper group. " +
+		MarkdownDescription: "Manages a single direct (immediate) membership of a subject in a Grouper group. " +
 			"Only the one membership represented by this resource is managed; other members of the group " +
 			"are never added or removed. All identity attributes are immutable (changing any forces replacement).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:      true,
-				Description:   "Deterministic identifier: \"<group_name>/<subject_source_id>/<subject_id>\".",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				Computed:            true,
+				MarkdownDescription: "Deterministic identifier: `<group_name>/<subject_source_id>/<subject_id>`.",
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"group_name": schema.StringAttribute{
-				Required:      true,
-				Description:   "Full colon-delimited name of the group. Changing this forces replacement.",
-				Validators:    grouperPathValidators(),
-				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
+				Required:            true,
+				MarkdownDescription: "Full colon-delimited name of the group. Changing this forces replacement.",
+				Validators:          grouperPathValidators(),
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.RequiresReplace()},
 			},
 			"subject_id": schema.StringAttribute{
 				Required: true,
-				Description: "Identifier of the subject to add. May be the subject's id or a login " +
+				MarkdownDescription: "Identifier of the subject to add. May be the subject's id or a login " +
 					"identifier such as a username or NetID (Grouper resolves either). Changing this forces replacement.",
 				Validators:    []validator.String{stringvalidator.LengthAtLeast(1)},
 				PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplace()},
@@ -79,7 +79,7 @@ func (r *membershipResource) Schema(_ context.Context, _ resource.SchemaRequest,
 			"subject_source_id": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
-				Description: "Subject source id (e.g. the LDAP source). Optional; supply it to disambiguate " +
+				MarkdownDescription: "Subject source id (e.g. the LDAP source). Optional; supply it to disambiguate " +
 					"when the same id exists in multiple sources. Populated with the resolved source after apply. " +
 					"Changing an explicitly-set value forces replacement.",
 				PlanModifiers: []planmodifier.String{
@@ -88,9 +88,9 @@ func (r *membershipResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				},
 			},
 			"membership_type": schema.StringAttribute{
-				Computed:      true,
-				Description:   "Membership type managed by this resource. Always \"immediate\" (direct).",
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+				Computed:            true,
+				MarkdownDescription: "Membership type managed by this resource. Always `immediate` (direct).",
+				PlanModifiers:       []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

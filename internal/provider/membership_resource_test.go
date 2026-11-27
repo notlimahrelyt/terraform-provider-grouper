@@ -28,7 +28,7 @@ func TestMembershipResource_Schema(t *testing.T) {
 			t.Errorf("missing membership attribute %q", name)
 			continue
 		}
-		if attr.GetDescription() == "" {
+		if attr.GetDescription() == "" && attr.GetMarkdownDescription() == "" {
 			t.Errorf("attribute %q has no description", name)
 		}
 	}

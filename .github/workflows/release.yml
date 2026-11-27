@@ -1,12 +1,12 @@
 name: Release
 
-# Builds, signs, and publishes provider artifacts when a semver tag (e.g.
-# v0.1.0) is pushed. The Terraform Registry picks up new GitHub releases
-# automatically once the provider is registered there.
+# Builds, signs, and publishes provider artifacts when a version tag (for
+# example v0.2.0) is pushed. The release notes are that version's section of
+# CHANGELOG.md. The Terraform Registry picks up new releases automatically.
 #
 # Required repository secrets:
-#   GPG_PRIVATE_KEY  ASCII-armored private key whose public half is added to
-#                    the Terraform Registry (Settings -> Signing Keys)
+#   GPG_PRIVATE_KEY  ASCII-armored private key whose public half is registered
+#                    with the Terraform Registry (User Settings > Signing Keys)
 #   PASSPHRASE       passphrase for that key
 
 on:
@@ -21,27 +21,33 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # GoReleaser needs the tag and full history.
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
 
+      - name: Unit tests
+        run: go test ./... -count=1
+
+      - name: Release notes from CHANGELOG.md
+        run: scripts/changelog-section.sh "${GITHUB_REF_NAME}" > "${RUNNER_TEMP}/release-notes.md"
+
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
-          args: release --clean
+          args: release --clean --release-notes=${{ runner.temp }}/release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

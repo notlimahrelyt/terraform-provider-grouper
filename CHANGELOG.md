@@ -6,6 +6,29 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Provider overview page on the Terraform Registry covering what the provider
+  manages, authentication, environment variables, compatibility, and security.
+- A complete example (`examples/complete`) that builds an application's folder,
+  admin and user groups, and memberships.
+- Lifecycle tests that run every resource and data source through real
+  Terraform plans, applies, imports, and out-of-band changes against an
+  in-memory Grouper, on Terraform 1.5 through 1.14.
+- `CONTRIBUTING.md`, `SECURITY.md`, issue and pull request templates, and
+  Dependabot configuration.
+
+### Changed
+
+- Attribute and resource descriptions are written in Markdown, so the Registry
+  shows values such as `30s` and `v2_6_000` as code.
+- The authentication guide lists the Grouper privilege each operation needs.
+- Contributor-only guides (development and acceptance testing) moved from the
+  Registry documentation to `CONTRIBUTING.md`.
+- GitHub releases now use the matching `CHANGELOG.md` section as release notes.
+- CI checks that generated documentation is current, validates it for the
+  Registry, checks example formatting, and validates the release configuration.
+
 ## [0.1.0]
 
 Initial public release.

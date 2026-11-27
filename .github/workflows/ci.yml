@@ -4,49 +4,112 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    name: build / vet / test
+    name: Build and unit test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+
+      - name: Check go.mod and go.sum are tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
 
       - name: Check formatting
         run: |
           unformatted=$(gofmt -s -l .)
           if [ -n "$unformatted" ]; then
-            echo "These files are not gofmt-clean:"; echo "$unformatted"; exit 1
+            echo "::error::These files are not gofmt-clean:"; echo "$unformatted"; exit 1
           fi
 
-      - name: Vet
-        run: go vet ./...
-
-      - name: Build
-        run: go build ./...
-
+      - run: go vet ./...
+      - run: go build ./...
       - name: Unit tests
-        run: go test ./... -count=1
+        run: go test ./... -count=1 -race -coverprofile=coverage.out
+      - name: Coverage summary
+        run: go tool cover -func=coverage.out | tail -1
 
   lint:
-    name: golangci-lint
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      # golangci-lint-action@v7 installs golangci-lint v2, which is built with a
-      # recent Go and can lint this module's Go version. (v6 installs v1, whose
-      # binary is built with an older Go and refuses newer `go` directives.)
-      - uses: golangci/golangci-lint-action@v7
+      - uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.12.2
+          version: v2.15.0
+
+  docs:
+    name: Docs and examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+
+      - name: Check docs are up to date
+        run: |
+          make generate
+          if [ -n "$(git status --porcelain -- docs)" ]; then
+            echo "::error::docs/ is out of date. Run 'make generate' and commit the result."
+            git status --porcelain -- docs
+            git diff -- docs
+            exit 1
+          fi
+
+      - name: Validate docs for the Registry
+        run: go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs validate --provider-name grouper
+
+      - name: Check example formatting
+        run: terraform fmt -check -recursive -diff examples
+
+  # Runs every resource and data source through real Terraform plans and
+  # applies against an in-memory fake Grouper, on each supported Terraform
+  # release line.
+  terraform:
+    name: Lifecycle tests (Terraform ${{ matrix.terraform }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform: ["1.5.*", "1.9.*", "1.13.*", "1.14.*"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ matrix.terraform }}
+          terraform_wrapper: false
+      - name: Lifecycle tests
+        run: go test ./internal/provider/ -run 'TestLifecycle' -count=1 -v
+
+  release-config:
+    name: Release config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          version: "~> v2"
+          args: check

@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a new resource, data source, or capability.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that the provider does not support today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed configuration
+      description: How you would like it to look in Terraform.
+      render: hcl
+  - type: textarea
+    id: api
+    attributes:
+      label: Grouper Web Services operations
+      description: The Grouper WS operations this would use, if you know them.
+  - type: input
+    id: grouper_version
+    attributes:
+      label: Grouper version
