@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-28
+
 ### Added
 
 - Provider overview page on the Terraform Registry covering what the provider
@@ -61,5 +63,6 @@ Initial public release.
 - Verified against Grouper server 4.16.0 using WS version segment `v2_6_000` and
   HTTP Basic authentication.
 
-[Unreleased]: https://github.com/notlimahrelyt/terraform-provider-grouper/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/notlimahrelyt/terraform-provider-grouper/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/notlimahrelyt/terraform-provider-grouper/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/notlimahrelyt/terraform-provider-grouper/releases/tag/v0.1.0
