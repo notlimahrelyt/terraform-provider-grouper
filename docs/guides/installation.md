@@ -17,7 +17,7 @@ terraform {
   required_providers {
     grouper = {
       source  = "notlimahrelyt/grouper"
-      version = "~> 0.1"
+      version = "~> 0.2"
     }
   }
 }
