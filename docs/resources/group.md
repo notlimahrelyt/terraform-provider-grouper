@@ -36,17 +36,17 @@ resource "grouper_group" "aws_admins" {
 
 ### Required
 
-- `name` (String) Full colon-delimited system name of the group, e.g. "example:apps:myteam:aws-admins". Changing this forces replacement.
+- `name` (String) Full colon-delimited system name of the group, e.g. `example:apps:myteam:aws-admins`. Changing this forces replacement.
 
 ### Optional
 
 - `description` (String) Description of the group.
-- `display_name` (String) Human-readable display label for this group component (Grouper displayExtension). Defaults to the last path component if unset.
+- `display_name` (String) Human-readable display label for this group component (Grouper `displayExtension`). Defaults to the last path component if unset.
 
 ### Read-Only
 
 - `id` (String) Grouper UUID of the group. Used as the stable Terraform identifier.
-- `stem_name` (String) Full name of the parent stem, derived from name.
+- `stem_name` (String) Full name of the parent stem, derived from `name`.
 
 ## Import
 

@@ -42,7 +42,7 @@ func TestProvider_Schema(t *testing.T) {
 
 	// Every attribute must have a description.
 	for name, attr := range resp.Schema.Attributes {
-		if attr.GetDescription() == "" {
+		if attr.GetDescription() == "" && attr.GetMarkdownDescription() == "" {
 			t.Errorf("attribute %q has no description", name)
 		}
 	}

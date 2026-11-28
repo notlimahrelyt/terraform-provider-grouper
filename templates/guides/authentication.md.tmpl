@@ -17,7 +17,7 @@ configuration files or Terraform state:
 
 ```sh
 export GROUPER_BASE_URL="https://grouper.example.edu/grouper-ws/servicesRest"
-export GROUPER_USERNAME="svc-account"
+export GROUPER_USERNAME="terraform-svc"
 export GROUPER_PASSWORD="…"
 ```
 
@@ -34,11 +34,20 @@ provider "grouper" {
 ## Least privilege
 
 Use a dedicated service account scoped to only the folders (stems) Terraform
-manages. The account needs:
+manages. Depending on which resources you use, the account needs:
 
-- **CREATE** on a parent stem to create child stems/groups within it.
-- **ADMIN**/**UPDATE** on a stem or group to modify or delete it.
-- **UPDATE** (member management) on a group to add/remove memberships.
+| To...                                   | Privilege                   | On                  |
+| --------------------------------------- | --------------------------- | ------------------- |
+| Create, update, or delete a folder      | `STEM_ADMIN`                | The parent folder   |
+| Create a group                          | `CREATE`                    | The parent folder   |
+| Update or delete a group                | `ADMIN`                     | The group           |
+| Add or remove a member                  | `UPDATE` (or `ADMIN`)       | The group           |
+| Read folders, groups, and members       | `VIEW` and `READ`           | The objects read    |
+
+By default Grouper grants `ADMIN` on a new group to the account that created it, so groups
+Terraform creates are manageable without extra grants. Granting privileges on a
+parent folder with inheritance lets one grant cover everything Terraform builds
+beneath it.
 
 ## API version
 

@@ -43,43 +43,43 @@ func (d *subjectDataSource) Metadata(_ context.Context, req datasource.MetadataR
 
 func (d *subjectDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Looks up a Grouper subject by id or identifier (e.g. a login name). Returns only " +
+		MarkdownDescription: "Looks up a Grouper subject by id or identifier (e.g. a login name). Returns only " +
 			"non-sensitive reference attributes.",
 		Attributes: map[string]schema.Attribute{
 			"subject_id": schema.StringAttribute{
 				Required: true,
-				Description: "Subject id or login identifier (e.g. a username or NetID) to look up. " +
+				MarkdownDescription: "Subject id or login identifier (e.g. a username or NetID) to look up. " +
 					"Grouper resolves either.",
 				Validators: []validator.String{stringvalidator.LengthAtLeast(1)},
 			},
 			"subject_source_id": schema.StringAttribute{
-				Optional:    true,
-				Description: "Optional subject source id to disambiguate when the same id exists in multiple sources.",
+				Optional:            true,
+				MarkdownDescription: "Optional subject source id to disambiguate when the same id exists in multiple sources.",
 			},
 			"subject_attribute_names": schema.ListAttribute{
 				Optional:    true,
 				ElementType: types.StringType,
-				Description: "Subject attributes to retrieve, by their Grouper attribute names. Names depend " +
-					"on your subject source configuration (e.g. \"email\", \"name\", \"description\"). " +
+				MarkdownDescription: "Subject attributes to retrieve, by their Grouper attribute names. Names depend " +
+					"on your subject source configuration (e.g. `email`, `name`, `description`). " +
 					"Requested values are returned in `attributes`. Only request what you need: these values are " +
 					"written to Terraform state, which should be treated as sensitive.",
 			},
 			"id": schema.StringAttribute{
-				Computed:    true,
-				Description: "Canonical Grouper subject id (may differ from the supplied identifier).",
+				Computed:            true,
+				MarkdownDescription: "Canonical Grouper subject id (may differ from the supplied identifier).",
 			},
 			"name": schema.StringAttribute{
-				Computed:    true,
-				Description: "Subject display name.",
+				Computed:            true,
+				MarkdownDescription: "Subject display name.",
 			},
 			"source_id": schema.StringAttribute{
-				Computed:    true,
-				Description: "Resolved subject source id.",
+				Computed:            true,
+				MarkdownDescription: "Resolved subject source id.",
 			},
 			"attributes": schema.MapAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "Map of the requested subject attributes (from `subject_attribute_names`) to " +
+				MarkdownDescription: "Map of the requested subject attributes (from `subject_attribute_names`) to " +
 					"their values. Empty when no attributes are requested.",
 			},
 		},

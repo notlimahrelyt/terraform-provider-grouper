@@ -28,7 +28,7 @@ func TestGroupResource_Schema(t *testing.T) {
 			t.Errorf("missing group attribute %q", name)
 			continue
 		}
-		if attr.GetDescription() == "" {
+		if attr.GetDescription() == "" && attr.GetMarkdownDescription() == "" {
 			t.Errorf("attribute %q has no description", name)
 		}
 	}

@@ -31,17 +31,17 @@ resource "grouper_stem" "cloud" {
 
 ### Required
 
-- `name` (String) Full colon-delimited system name of the stem, e.g. "example:apps:myteam". Changing this forces replacement.
+- `name` (String) Full colon-delimited system name of the stem, e.g. `example:apps:myteam`. Changing this forces replacement.
 
 ### Optional
 
 - `description` (String) Description of the stem.
-- `display_name` (String) Human-readable display label for this stem component (Grouper displayExtension). Defaults to the last path component if unset.
+- `display_name` (String) Human-readable display label for this stem component (Grouper `displayExtension`). Defaults to the last path component if unset.
 
 ### Read-Only
 
 - `id` (String) Grouper UUID of the stem. Used as the stable Terraform identifier.
-- `parent_stem_name` (String) Full name of the parent stem, derived from name. Empty for a top-level stem.
+- `parent_stem_name` (String) Full name of the parent stem, derived from `name`. Empty for a top-level stem.
 
 ## Import
 

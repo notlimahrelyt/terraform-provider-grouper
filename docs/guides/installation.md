@@ -29,7 +29,7 @@ provider "grouper" {
 ```
 
 ```sh
-export GROUPER_USERNAME="svc-account"
+export GROUPER_USERNAME="terraform-svc"
 export GROUPER_PASSWORD="…"
 terraform init
 terraform plan

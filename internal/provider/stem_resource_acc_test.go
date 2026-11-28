@@ -70,3 +70,34 @@ resource "grouper_stem" "test" {
 }
 `, name, displayName, description)
 }
+
+// TestAccStemResource_removeDescription checks what Grouper does when a
+// description is removed from configuration. The client omits an empty
+// description from the save request; if Grouper keeps the old value when the
+// field is omitted, the second step fails with a non-empty plan, which means the
+// client must send an explicit empty value instead.
+func TestAccStemResource_removeDescription(t *testing.T) {
+	name := testChildStem("tfacc-stem-desc")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccStemConfig(name, "Description Test", "to be removed"),
+				Check:  resource.TestCheckResourceAttr("grouper_stem.test", "description", "to be removed"),
+			},
+			{
+				Config: fmt.Sprintf(`
+provider "grouper" {}
+
+resource "grouper_stem" "test" {
+  name         = %q
+  display_name = "Description Test"
+}
+`, name),
+				Check: resource.TestCheckNoResourceAttr("grouper_stem.test", "description"),
+			},
+		},
+	})
+}

@@ -1,0 +1,94 @@
+---
+page_title: "Provider: Grouper"
+description: |-
+  Manage Internet2 Grouper folders (stems), groups, and direct memberships as code.
+---
+
+# Grouper Provider
+
+The Grouper provider manages [Internet2 Grouper](https://www.internet2.edu/products-services/trust-identity/grouper/)
+folders (stems), groups, and direct memberships through the Grouper Web Services
+REST API.
+
+Use it to keep the groups an application or team depends on in version control:
+create the folder structure, define the groups, and add the people (or nested
+groups) that belong in them, all reviewed and applied like any other
+infrastructure change.
+
+## What it manages
+
+| Type        | Name                                                  | Purpose                                         |
+| ----------- | ----------------------------------------------------- | ----------------------------------------------- |
+| Resource    | [`grouper_stem`](resources/stem)                      | A folder (stem)                                 |
+| Resource    | [`grouper_group`](resources/group)                    | A group                                         |
+| Resource    | [`grouper_membership`](resources/membership)          | One direct membership of a subject in a group   |
+| Data source | [`grouper_stem`](data-sources/stem)                   | Look up an existing folder                      |
+| Data source | [`grouper_group`](data-sources/group)                 | Look up an existing group                       |
+| Data source | [`grouper_subject`](data-sources/subject)             | Resolve a person or group to its Grouper subject |
+
+Memberships are managed **one at a time**: each `grouper_membership` adds exactly
+one direct member and removes only that member on destroy. Members added by
+hand, by the Grouper Loader, or by another tool are never touched. See
+[Understanding memberships](guides/memberships) for how this interacts with
+effective, nested, and loader-managed membership.
+
+The provider deliberately does **not** manage privileges, attribute definitions,
+composite groups, loader jobs, or provisioning.
+
+## Example Usage
+
+{{ tffile "examples/provider/provider.tf" }}
+
+A complete example that builds an application's folder, admin and user groups,
+and their members is in
+[`examples/complete`](https://github.com/notlimahrelyt/terraform-provider-grouper/tree/main/examples/complete).
+
+## Authentication
+
+The provider authenticates to Grouper Web Services with HTTP Basic
+authentication using a Grouper account. Supply credentials through environment
+variables so they never appear in configuration or state:
+
+```shell
+export GROUPER_BASE_URL="https://grouper.example.edu/grouper-ws/servicesRest"
+export GROUPER_USERNAME="terraform-svc"
+export GROUPER_PASSWORD="..."
+```
+
+Use a dedicated account that holds only the privileges Terraform needs on the
+folders it manages. The [authentication guide](guides/authentication) lists
+them.
+
+## Environment variables
+
+| Variable                  | Equivalent attribute | Default    |
+| ------------------------- | -------------------- | ---------- |
+| `GROUPER_BASE_URL`        | `base_url`           | (required) |
+| `GROUPER_USERNAME`        | `username`           |            |
+| `GROUPER_PASSWORD`        | `password`           |            |
+| `GROUPER_REQUEST_TIMEOUT` | `request_timeout`    | `30s`      |
+
+A value set in the provider block takes precedence over the environment.
+
+## Compatibility
+
+| Grouper | Web Services version (`ws_version`) | Status                         |
+| ------- | ----------------------------------- | ------------------------------ |
+| 4.16    | `v2_6_000` (default)                | Verified by acceptance tests   |
+
+Other Grouper releases that serve the `v2_6_000` API are expected to work but
+have not been verified. If your deployment needs a different version segment,
+set `ws_version`. Reports of results against other versions are welcome as
+[GitHub issues](https://github.com/notlimahrelyt/terraform-provider-grouper/issues).
+
+## Security considerations
+
+- Terraform state contains group names, UUIDs, and subject identifiers. Store
+  state in an encrypted, access-controlled backend.
+- Credentials are never written to state or logs.
+- TLS certificates are verified by default. `insecure_skip_verify` exists only
+  for development servers with self-signed certificates.
+- Manage each Grouper object from exactly one Terraform state. Two
+  configurations managing the same group will fight over it.
+
+{{ .SchemaMarkdown | trimspace }}

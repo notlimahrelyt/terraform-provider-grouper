@@ -124,3 +124,47 @@ resource "grouper_membership" "m2" {
 %[4]s}
 `, group, s1, s2, src)
 }
+
+// TestAccMembershipResource_nestedGroup verifies that a group can be managed as
+// a direct member of another group by passing the member group's UUID as
+// subject_id. It needs no test subject: both groups are created under the test
+// stem.
+func TestAccMembershipResource_nestedGroup(t *testing.T) {
+	outer := testChildStem("tfacc-nest-outer")
+	inner := testChildStem("tfacc-nest-inner")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: fmt.Sprintf(`
+provider "grouper" {}
+
+resource "grouper_group" "outer" {
+  name = %[1]q
+}
+
+resource "grouper_group" "inner" {
+  name = %[2]q
+}
+
+resource "grouper_membership" "nested" {
+  group_name = grouper_group.outer.name
+  subject_id = grouper_group.inner.id
+}
+`, outer, inner),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrPair("grouper_membership.nested", "subject_id", "grouper_group.inner", "id"),
+					resource.TestCheckResourceAttr("grouper_membership.nested", "membership_type", "immediate"),
+					resource.TestCheckResourceAttrSet("grouper_membership.nested", "subject_source_id"),
+				),
+			},
+			{
+				ResourceName:      "grouper_membership.nested",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}

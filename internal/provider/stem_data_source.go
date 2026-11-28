@@ -42,29 +42,29 @@ func (d *stemDataSource) Metadata(_ context.Context, req datasource.MetadataRequ
 
 func (d *stemDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Looks up an existing Grouper stem (folder) by exactly one of id or name.",
+		MarkdownDescription: "Looks up an existing Grouper stem (folder) by exactly one of `id` or `name`.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Grouper UUID of the stem. Provide exactly one of id or name.",
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Grouper UUID of the stem. Provide exactly one of `id` or `name`.",
 			},
 			"name": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Full colon-delimited name of the stem. Provide exactly one of id or name.",
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Full colon-delimited name of the stem. Provide exactly one of `id` or `name`.",
 			},
 			"display_name": schema.StringAttribute{
-				Computed:    true,
-				Description: "Display label for this stem component (Grouper displayExtension).",
+				Computed:            true,
+				MarkdownDescription: "Display label for this stem component (Grouper `displayExtension`).",
 			},
 			"description": schema.StringAttribute{
-				Computed:    true,
-				Description: "Description of the stem.",
+				Computed:            true,
+				MarkdownDescription: "Description of the stem.",
 			},
 			"parent_stem_name": schema.StringAttribute{
-				Computed:    true,
-				Description: "Full name of the parent stem, derived from name.",
+				Computed:            true,
+				MarkdownDescription: "Full name of the parent stem, derived from `name`.",
 			},
 		},
 	}

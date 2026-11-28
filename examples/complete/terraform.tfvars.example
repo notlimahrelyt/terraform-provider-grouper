@@ -1,0 +1,6 @@
+parent_stem = "example:apps"
+app_id      = "inventory"
+app_name    = "Inventory"
+
+admins = ["abc123"]
+users  = ["abc123", "xyz456"]

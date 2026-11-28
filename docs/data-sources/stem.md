@@ -8,7 +8,7 @@ description: |-
 
 # grouper_stem (Data Source)
 
-Looks up an existing Grouper stem (folder) by exactly one of id or name.
+Looks up an existing Grouper stem (folder) by exactly one of `id` or `name`.
 
 ## Example Usage
 
@@ -33,11 +33,11 @@ output "stem_uuid" {
 
 ### Optional
 
-- `id` (String) Grouper UUID of the stem. Provide exactly one of id or name.
-- `name` (String) Full colon-delimited name of the stem. Provide exactly one of id or name.
+- `id` (String) Grouper UUID of the stem. Provide exactly one of `id` or `name`.
+- `name` (String) Full colon-delimited name of the stem. Provide exactly one of `id` or `name`.
 
 ### Read-Only
 
 - `description` (String) Description of the stem.
-- `display_name` (String) Display label for this stem component (Grouper displayExtension).
-- `parent_stem_name` (String) Full name of the parent stem, derived from name.
+- `display_name` (String) Display label for this stem component (Grouper `displayExtension`).
+- `parent_stem_name` (String) Full name of the parent stem, derived from `name`.

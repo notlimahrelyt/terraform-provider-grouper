@@ -41,7 +41,7 @@ output "email" {
 
 ### Optional
 
-- `subject_attribute_names` (List of String) Subject attributes to retrieve, by their Grouper attribute names. Names depend on your subject source configuration (e.g. "email", "name", "description"). Requested values are returned in `attributes`. Only request what you need: these values are written to Terraform state, which should be treated as sensitive.
+- `subject_attribute_names` (List of String) Subject attributes to retrieve, by their Grouper attribute names. Names depend on your subject source configuration (e.g. `email`, `name`, `description`). Requested values are returned in `attributes`. Only request what you need: these values are written to Terraform state, which should be treated as sensitive.
 - `subject_source_id` (String) Optional subject source id to disambiguate when the same id exists in multiple sources.
 
 ### Read-Only

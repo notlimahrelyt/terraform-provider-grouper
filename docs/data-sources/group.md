@@ -8,7 +8,7 @@ description: |-
 
 # grouper_group (Data Source)
 
-Looks up an existing Grouper group by exactly one of id or name.
+Looks up an existing Grouper group by exactly one of `id` or `name`.
 
 ## Example Usage
 
@@ -27,13 +27,13 @@ output "group_uuid" {
 
 ### Optional
 
-- `id` (String) Grouper UUID of the group. Provide exactly one of id or name.
-- `name` (String) Full colon-delimited name of the group. Provide exactly one of id or name.
+- `id` (String) Grouper UUID of the group. Provide exactly one of `id` or `name`.
+- `name` (String) Full colon-delimited name of the group. Provide exactly one of `id` or `name`.
 
 ### Read-Only
 
 - `description` (String) Description of the group.
-- `display_name` (String) Display label for this group component (Grouper displayExtension).
+- `display_name` (String) Display label for this group component (Grouper `displayExtension`).
 - `enabled` (Boolean) Whether the group is enabled.
-- `stem_name` (String) Full name of the parent stem, derived from name.
-- `type_of_group` (String) Grouper type of group (e.g. "group").
+- `stem_name` (String) Full name of the parent stem, derived from `name`.
+- `type_of_group` (String) Grouper type of group (e.g. `group`).

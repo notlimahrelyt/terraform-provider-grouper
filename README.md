@@ -1,127 +1,119 @@
-# terraform-provider-grouper
+# Terraform Provider for Grouper
 
-A Terraform provider for [Internet2 Grouper](https://www.internet2.edu/products-services/trust-identity/grouper/),
-built on the [Terraform Plugin Framework](https://developer.hashicorp.com/terraform/plugin/framework).
+[![CI](https://github.com/notlimahrelyt/terraform-provider-grouper/actions/workflows/ci.yml/badge.svg)](https://github.com/notlimahrelyt/terraform-provider-grouper/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/notlimahrelyt/terraform-provider-grouper)](https://github.com/notlimahrelyt/terraform-provider-grouper/releases/latest)
+[![Terraform Registry](https://img.shields.io/badge/registry-notlimahrelyt%2Fgrouper-844FBA?logo=terraform)](https://registry.terraform.io/providers/notlimahrelyt/grouper/latest)
+[![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-blue)](LICENSE)
 
-It lets Terraform manage Grouper folders/stems, groups, and **direct**
-memberships through the Grouper Web Services (WS) REST API.
+Manage [Internet2 Grouper](https://www.internet2.edu/products-services/trust-identity/grouper/)
+folders, groups, and memberships as code.
 
-Every endpoint is implemented only after its request/response shape was
-confirmed against a live Grouper deployment; the observed shapes are recorded in
-[`docs/api-observations.md`](docs/api-observations.md).
+```hcl
+resource "grouper_stem" "inventory" {
+  name         = "example:apps:inventory"
+  display_name = "Inventory"
+}
 
-## Scope
+resource "grouper_group" "admins" {
+  name         = "${grouper_stem.inventory.name}:admins"
+  display_name = "Inventory Admins"
+}
 
-Resources: `grouper_stem`, `grouper_group`, `grouper_membership` (one direct
-membership per resource). Data sources: `grouper_stem`, `grouper_group`,
-`grouper_subject` (which can also return requested non-sensitive subject
-attributes such as email address).
+resource "grouper_membership" "admins" {
+  for_each = toset(["abc123", "xyz456"])
 
-Explicitly **out of scope**: effective/composite memberships, authoritative
-"manage all members" resources, Grouper Loader jobs, attribute definitions,
-SCIM, and point-in-time queries.
+  group_name = grouper_group.admins.name
+  subject_id = each.value
+}
+```
 
-## Installing / consuming
+## Documentation
 
-Install from the Terraform Registry by declaring the provider (below) and
-running `terraform init`. For air-gapped environments, pre-built zips are
-attached to each [GitHub release](https://github.com/notlimahrelyt/terraform-provider-grouper/releases).
-See the [installation guide](docs/guides/installation.md).
+Full documentation is on the
+[Terraform Registry](https://registry.terraform.io/providers/notlimahrelyt/grouper/latest/docs):
 
-## Provider configuration
+- [Resources](https://registry.terraform.io/providers/notlimahrelyt/grouper/latest/docs/resources/stem):
+  `grouper_stem`, `grouper_group`, `grouper_membership`
+- [Data sources](https://registry.terraform.io/providers/notlimahrelyt/grouper/latest/docs/data-sources/stem):
+  `grouper_stem`, `grouper_group`, `grouper_subject`
+- Guides: [authentication](docs/guides/authentication.md),
+  [understanding memberships](docs/guides/memberships.md),
+  [installation](docs/guides/installation.md),
+  [environment variables](docs/guides/environment-variables.md),
+  [troubleshooting](docs/guides/troubleshooting.md)
+- A [complete example](examples/complete) that builds an application's folder,
+  groups, and members
+
+## Getting started
 
 ```hcl
 terraform {
   required_providers {
     grouper = {
-      source = "notlimahrelyt/grouper"
+      source  = "notlimahrelyt/grouper"
+      version = "~> 0.1"
     }
   }
 }
 
 provider "grouper" {
-  base_url             = "https://grouper.example.edu/grouper-ws/servicesRest"
-  # username / password are best supplied via environment variables
-  request_timeout      = "30s"
-  insecure_skip_verify = false
+  base_url = "https://grouper.example.edu/grouper-ws/servicesRest"
 }
 ```
 
-| Attribute              | Required | Env var                   | Notes                                        |
-| ---------------------- | -------- | ------------------------- | -------------------------------------------- |
-| `base_url`             | yes\*    | `GROUPER_BASE_URL`        | Must be http/https; trailing slash trimmed   |
-| `username`             | no       | `GROUPER_USERNAME`        | Enables HTTP Basic auth when set             |
-| `password`             | no       | `GROUPER_PASSWORD`        | Sensitive; prefer the env var                |
-| `request_timeout`      | no       | `GROUPER_REQUEST_TIMEOUT` | Go duration string; default `30s`            |
-| `insecure_skip_verify` | no       | —                         | Default `false`; warns loudly when enabled   |
-| `ws_version`           | no       | —                         | WS API path segment; default `v2_6_000`      |
-
-\* Required either via the attribute or the environment variable.
-
-Only HTTP Basic authentication is implemented today. Authentication is modular
-(see `internal/client/auth.go`), so other methods can be added without changing
-existing configuration; contributions are welcome.
-
-## Development
-
-Requires Go (see `go.mod` for the version) and, for docs/lint, `tfplugindocs`
-and `golangci-lint`.
-
-```sh
-make fmt      # gofmt -s -w .
-make vet      # go vet ./...
-make lint     # golangci-lint
-make test     # unit tests (no network)
-make build    # compile the provider
-make install  # install into ~/.terraform.d/plugins for local testing
-make generate # regenerate registry docs
+```shell
+export GROUPER_USERNAME="terraform-svc"
+export GROUPER_PASSWORD="..."
+terraform init
+terraform plan
 ```
 
-Documentation under `docs/` is generated by `tfplugindocs` from schema
-descriptions, the `examples/` directory, and guide sources in
-`templates/guides/`. **Edit `templates/guides/`, not `docs/guides/`** — the
-latter is overwritten on every `make generate`.
+The account needs privileges on the folders Terraform manages; the
+[authentication guide](docs/guides/authentication.md) lists them.
 
-### Acceptance tests
+## Design principles
 
-Acceptance tests talk to a **real** Grouper deployment and are gated:
+- **Memberships are never authoritative.** Each `grouper_membership` manages one
+  direct member. Members added by hand, by the Grouper Loader, or by another tool
+  are never removed. There is deliberately no "set all members of this group"
+  resource.
+- **Stable identity.** Folders and groups are tracked by Grouper UUID, so state
+  survives display-name changes. Renaming a folder or group replaces it.
+- **No surprises on delete.** Folders are never deleted recursively; Grouper's
+  refusal to delete a non-empty folder is reported, not worked around.
+- **Verified against a real server.** Every API call was confirmed against a live
+  Grouper before it was written, and is recorded in
+  [`docs/api-observations.md`](docs/api-observations.md).
 
-```sh
-TF_ACC=1 \
-GROUPER_BASE_URL=... \
-GROUPER_USERNAME=... \
-GROUPER_PASSWORD=... \
-GROUPER_TEST_STEM=... \
-make testacc
-```
-
-They must only ever operate inside a dedicated test stem, and refuse to run
-unless `GROUPER_TEST_STEM` contains "test". Never point them at a production
-namespace. See the [acceptance-testing guide](docs/guides/acceptance-testing.md).
+Out of scope for now: privileges, composite groups, attribute definitions,
+Grouper Loader jobs, and provisioning.
 
 ## Compatibility
 
-| Provider version | Grouper version | Terraform protocol | Status                          |
-| ---------------- | --------------- | ------------------ | ------------------------------- |
-| 0.1.x            | 4.16.0          | 6.0                | Verified (all acceptance tests) |
+| Provider | Grouper | `ws_version`         | Terraform | Status                          |
+| -------- | ------- | -------------------- | --------- | ------------------------------- |
+| 0.1.x    | 4.16    | `v2_6_000` (default) | >= 1.5    | Verified with acceptance tests  |
 
-All resources and data sources have been verified end-to-end against Grouper
-server 4.16.0 (WS version segment `v2_6_000`, HTTP Basic auth) via the acceptance
-test suite, including the guarantee that deleting one membership does not affect
-unrelated members. Compatibility with other Grouper versions is not claimed until
-tested. If you run the acceptance tests against another version, please open an
-issue with the results so the table can be updated.
+Other Grouper versions that serve the `v2_6_000` API are expected to work but
+have not been verified. If you run the acceptance tests against another version,
+please [open an issue](https://github.com/notlimahrelyt/terraform-provider-grouper/issues/new/choose)
+with the results.
 
 ## Security
 
-- Credentials come from environment variables or a secret store; they
-  are never written to Terraform state or logs.
-- Terraform state may contain group and subject identifiers — treat it as
-  sensitive.
-- TLS verification is on by default; disabling it requires explicit opt-in.
-- `.terraform` directories, state files, plans, and captured API responses are
-  gitignored.
+- Credentials are read from the environment and never written to state or logs.
+- Terraform state contains group names and subject identifiers; keep it in an
+  encrypted, access-controlled backend.
+- TLS certificates are verified unless you explicitly opt out.
+
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+Bug reports, compatibility reports, and pull requests are welcome. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, test suites, and
+release process.
 
 ## License
 
-[Mozilla Public License 2.0](LICENSE).
+[Mozilla Public License 2.0](LICENSE)

@@ -2,7 +2,7 @@
 page_title: "Environment variables - Grouper Provider"
 subcategory: ""
 description: |-
-  Environment variables recognized by the Grouper provider and its tests.
+  Environment variables recognized by the Grouper provider.
 ---
 
 # Environment variables
@@ -21,17 +21,5 @@ description: |-
 An explicit value in the `provider` block takes precedence over the environment
 variable.
 
-## Acceptance tests
-
-These are used only by `make testacc` / `go test -run TestAcc`. They never affect
-normal provider use.
-
-| Variable                        | Purpose                                                        |
-| ------------------------------- | ------------------------------------------------------------- |
-| `TF_ACC`                        | Must be set (any value) to enable acceptance tests            |
-| `GROUPER_TEST_STEM`             | Parent stem for test objects; **must match `test`** (guardrail) |
-| `GROUPER_TEST_SUBJECT_ID`       | A resolvable subject id or login identifier; membership/subject tests skip without it |
-| `GROUPER_TEST_SUBJECT_ID_2`     | A second subject; enables the "preserves unrelated members" test |
-| `GROUPER_TEST_SUBJECT_SOURCE_ID`| Optional subject source id for the tests                       |
-
-See the [acceptance testing guide](./acceptance-testing.md) for safety rules.
+Variables used only by the acceptance tests are listed in
+[CONTRIBUTING.md](https://github.com/notlimahrelyt/terraform-provider-grouper/blob/main/CONTRIBUTING.md#acceptance-tests).
